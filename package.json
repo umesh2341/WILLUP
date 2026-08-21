@@ -1,0 +1,28 @@
+{
+  "name": "willup-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Human-in-the-Loop Agentic AI Platform for Institutional Service Delivery",
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "dev:server": "npm --workspace=server run dev",
+    "dev:client": "npm --workspace=client run dev",
+    "build:server": "npm --workspace=server run build",
+    "build:client": "npm --workspace=client run build",
+    "build": "npm run build:server && npm run build:client",
+    "start:server": "npm --workspace=server run start"
+  },
+  "keywords": [
+    "agentic-ai",
+    "human-in-the-loop",
+    "institutional-service-delivery",
+    "express",
+    "react",
+    "typescript"
+  ],
+  "author": "",
+  "license": "ISC"
+}

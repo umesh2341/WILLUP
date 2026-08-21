@@ -1,0 +1,236 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ---------- Users & Roles ----------
+
+// Mirrors Supabase's auth.users — id is the Supabase auth user id (1:1), not separately generated.
+// Credentials (password, email verification, sessions) are fully owned by Supabase Auth; this table
+// only holds app-specific profile data.
+model User {
+  id          String   @id            // == auth.users.id from Supabase Auth
+  username    String   @unique        // auto-generated on signup, see §4.2 — searchable when admin adds members
+  displayName String
+  createdAt   DateTime @default(now())
+
+  roleAssignments RoleAssignment[]
+  ticketsCreated  Ticket[]         @relation("CreatedBy")
+  approvals       Approval[]
+  notifications   Notification[]
+}
+
+// A "Role" is a node in an institution's hierarchy, e.g. "Warden", "HOD", "Caretaker"
+model Role {
+  id                String   @id @default(uuid())
+  name              String              // "Warden", "HOD", "Caretaker", etc.
+  domain            Domain              // which hierarchy this role belongs to
+  order             Int                 // position in the hierarchy chain (0 = first stage)
+  escalationMinutes Int?           // time allowed at this stage before auto-escalation
+  createdAt         DateTime @default(now())
+
+  assignments  RoleAssignment[]
+  stagesAtRole WorkflowStage[]
+}
+
+// Many-to-many: multiple users can hold the same role
+model RoleAssignment {
+  id     String @id @default(uuid())
+  userId String
+  roleId String
+  user   User   @relation(fields: [userId], references: [id])
+  role   Role   @relation(fields: [roleId], references: [id])
+
+  @@unique([userId, roleId])
+}
+
+enum Domain {
+  LABORATORY
+  CERTIFICATE
+  HOSTEL_MAINTENANCE
+  GRIEVANCE
+}
+
+// ---------- Tickets / Requests ----------
+
+model Ticket {
+  id             String       @id @default(uuid())
+  studentId      String
+  student        User         @relation("CreatedBy", fields: [studentId], references: [id])
+  domain         Domain
+  scope          Scope        // PERSONAL or COLLECTIVE
+  severity       Severity     // LOW / MEDIUM / CRITICAL (or N/A for domains without severity, e.g. Laboratory)
+  status         TicketStatus @default(RECEIVED)
+  originalText   String       // raw student message, original language
+  originalLang   String
+  translatedText String?
+  extractedData  Json         // structured fields per domain (room, cert type, lab slot, etc.)
+
+  currentStageId String?
+  currentStage   WorkflowStage? @relation(fields: [currentStageId], references: [id])
+
+  collectiveGroupId String?
+  collectiveGroup   CollectiveGroup? @relation(fields: [collectiveGroupId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  currentNodeKey String? // for frontend flow-view highlighting
+  lastAction     String? // last audited action
+
+  auditLogs AuditLog[]
+  approvals Approval[]
+  documents Document[]
+}
+
+enum Scope {
+  PERSONAL
+  COLLECTIVE
+}
+
+enum Severity {
+  LOW
+  MEDIUM
+  CRITICAL
+  NA
+}
+
+enum TicketStatus {
+  RECEIVED
+  CLASSIFIED
+  AWAITING_INFO        // AI asked student for missing info/docs
+  QUEUED_COLLECTIVE     // sitting in a collection window
+  IN_WORKFLOW           // actively at a hierarchy stage
+  ESCALATED
+  RESOLVED
+  REJECTED
+}
+
+// ---------- Collective / Batching ----------
+
+model CollectiveGroup {
+  id           String      @id @default(uuid())
+  domain       Domain
+  category     String      // e.g. "Electrical - Fan", "Cleanliness"
+  windowStart  DateTime    @default(now())
+  windowEndsAt DateTime    // when the collection window closes
+  status       GroupStatus @default(COLLECTING)
+  summary      Json?       // AI-generated structured summary once dispatched
+  tickets      Ticket[]
+}
+
+enum GroupStatus {
+  COLLECTING
+  DISPATCHED
+}
+
+// ---------- Workflow Engine ----------
+
+// A WorkflowDefinition is the institution-configured chain for a domain
+model WorkflowDefinition {
+  id     String          @id @default(uuid())
+  domain Domain          @unique
+  stages WorkflowStage[]
+}
+
+model WorkflowStage {
+  id                      String             @id @default(uuid())
+  workflowDefinitionId    String
+  workflowDefinition      WorkflowDefinition @relation(fields: [workflowDefinitionId], references: [id])
+  roleId                  String
+  role                    Role               @relation(fields: [roleId], references: [id])
+  order                   Int                // 0,1,2... sequence in the chain
+  redirectIfSubjectIsRole String?            // conflict-of-interest override: if complaint target = this role, skip to next
+
+  tickets Ticket[]
+}
+
+model Approval {
+  id                 String           @id @default(uuid())
+  ticketId           String
+  ticket             Ticket           @relation(fields: [ticketId], references: [id])
+  stageId            String
+  approvedById       String
+  approvedBy         User             @relation(fields: [approvedById], references: [id])
+  roleNameAtApproval String           // denormalized snapshot for audit clarity
+  decision           ApprovalDecision
+  comment            String?
+  createdAt          DateTime         @default(now())
+}
+
+enum ApprovalDecision {
+  APPROVED
+  REJECTED
+  ESCALATED
+}
+
+// ---------- Audit Trail ----------
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  ticketId  String
+  ticket    Ticket   @relation(fields: [ticketId], references: [id])
+  actor     String   // "AI:CategoryAgent", "AI:CertificateAgent", or a userId
+  action    String   // "CLASSIFIED", "ROUTED", "ESCALATED", "APPROVED", etc.
+  details   Json?
+  createdAt DateTime @default(now())
+}
+
+// ---------- Documents (Certificates) ----------
+
+model Document {
+  id         String   @id @default(uuid())
+  ticketId   String
+  ticket     Ticket   @relation(fields: [ticketId], references: [id])
+  fileName   String
+  fileUrl    String
+  uploadedAt DateTime @default(now())
+}
+
+// ---------- Notifications ----------
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  ticketId  String?
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+// ---------- RAG Knowledge Base ----------
+
+model KnowledgeDocument {
+  id        String   @id @default(uuid())
+  title     String
+  domain    Domain?
+  sourceUrl String?
+  content   String
+  createdAt DateTime @default(now())
+
+  chunks KnowledgeChunk[]
+}
+
+model KnowledgeChunk {
+  id         String            @id @default(uuid())
+  documentId String
+  document   KnowledgeDocument @relation(fields: [documentId], references: [id])
+  content    String
+  // Using pgvector. The dimension 384 matches Xenova/all-MiniLM-L6-v2 
+  // via @huggingface/transformers (used for free/offline local embedding, no API dependency).
+  embedding  Unsupported("vector(384)") 
+}
+
+// ---------- Severity Rules ----------
+
+model SeverityRule {
+  id                       String   @id @default(uuid())
+  domain                   Domain
+  keyword                  String   // e.g. "electrical", "health", "harassment", "wifi"
+  severity                 Severity
+  escalationCadenceMinutes Int      // e.g. immediate=0, medium=60, low=1440 (end of day)
+}

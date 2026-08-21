@@ -1,0 +1,71 @@
+[
+  {
+    "id": "cert_bonafide_success",
+    "description": "Standard Bonafide Certificate request",
+    "match": {
+      "exact": "I want to apply for a Bonafide Certificate.",
+      "keywords": ["Bonafide Certificate"]
+    },
+    "output": {
+      "extractedData": {
+        "certType": "Bonafide Certificate",
+        "requiredDocs": ["ID Card", "Fee Receipt", "Application Form"]
+      },
+      "severity": "NA",
+      "isDuplicate": false,
+      "missingInfo": ["ID Card", "Fee Receipt", "Application Form"]
+    }
+  },
+  {
+    "id": "cert_studies_conduct_success",
+    "description": "Study certificate and conduct certificate request",
+    "match": {
+      "exact": "I need a study certificate and a conduct certificate for my internship application.",
+      "keywords": ["study certificate", "conduct certificate"]
+    },
+    "output": {
+      "extractedData": {
+        "certType": "Study Certificate",
+        "requiredDocs": ["ID Card", "Department NOC"]
+      },
+      "severity": "NA",
+      "isDuplicate": false,
+      "missingInfo": ["ID Card", "Department NOC"]
+    }
+  },
+  {
+    "id": "cert_policy_conflict_unrecognized",
+    "description": "Certificate request with unrecognized document type creating a policy conflict",
+    "match": {
+      "exact": "I need a Super Secret Alien Passport.",
+      "keywords": ["Alien Passport", "Super Secret"]
+    },
+    "output": {
+      "extractedData": {
+        "certType": "Super Secret Alien Passport",
+        "requiredDocs": []
+      },
+      "severity": "NA",
+      "isDuplicate": false,
+      "missingInfo": [],
+      "policyConflict": "certificate type not recognized — needs manual classification"
+    }
+  },
+  {
+    "id": "cert_transcript_success",
+    "description": "Official academic transcript request",
+    "match": {
+      "exact": "Please issue an official transcript and medium of instruction certificate.",
+      "keywords": ["transcript", "medium of instruction"]
+    },
+    "output": {
+      "extractedData": {
+        "certType": "Transcript",
+        "requiredDocs": ["Semester Grade Sheets", "Provisional Certificate"]
+      },
+      "severity": "NA",
+      "isDuplicate": false,
+      "missingInfo": ["Semester Grade Sheets", "Provisional Certificate"]
+    }
+  }
+]

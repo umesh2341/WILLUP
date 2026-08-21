@@ -1,0 +1,200 @@
+[
+  {
+    "id": "chat_hindi_hostel_fan",
+    "description": "Hindi hostel fan maintenance complaint",
+    "match": {
+      "exact": "हॉस्टल के कमरा नंबर 204 में पंखा खराब है और बहुत आवाज कर रहा है, कृपया इसे ठीक करें।",
+      "keywords": ["204", "पंखा", "हॉस्टल"]
+    },
+    "output": {
+      "translatedText": "The fan in hostel room 204 is broken and making a lot of noise, please fix it.",
+      "detectedLanguage": "Hindi",
+      "isFollowUp": false,
+      "intent": "REPORT"
+    }
+  },
+  {
+    "id": "chat_hindi_hostel_tap",
+    "description": "Hindi hostel tap water leakage complaint",
+    "match": {
+      "exact": "हॉस्टल के ब्लॉक B कमरा 304 में पानी का नल टूट गया है और लगातार पानी बह रहा है।",
+      "keywords": ["304", "ब्लॉक B", "नल"]
+    },
+    "output": {
+      "translatedText": "The water tap in hostel Block B room 304 is broken and water is continuously leaking.",
+      "detectedLanguage": "Hindi",
+      "isFollowUp": false,
+      "intent": "REPORT"
+    }
+  },
+  {
+    "id": "chat_spanish_certificate",
+    "description": "Spanish certificate request",
+    "match": {
+      "exact": "Necesito un certificado de estudios y una constancia de conducta para mi solicitud de pasantía.",
+      "keywords": ["certificado", "conducta", "pasantía"]
+    },
+    "output": {
+      "translatedText": "I need a study certificate and a conduct certificate for my internship application.",
+      "detectedLanguage": "Spanish",
+      "isFollowUp": false,
+      "intent": "REPORT"
+    }
+  },
+  {
+    "id": "chat_spanish_unclear_clarification",
+    "description": "Spanish message with Category AI unclear flag requesting clarification",
+    "match": {
+      "exact": "Tengo un problema urgente con un documento.",
+      "keywords": ["problema urgente", "documento"],
+      "isCategoryUnclear": true
+    },
+    "output": {
+      "translatedText": "I have an urgent problem with a document.",
+      "detectedLanguage": "Spanish",
+      "isFollowUp": false,
+      "clarifyingQuestion": "¿Podría especificar qué tipo de certificado o documento necesita y su número de registro?",
+      "intent": "REPORT"
+    }
+  },
+  {
+    "id": "chat_english_lab_oscilloscope",
+    "description": "English digital electronics lab oscilloscope issue",
+    "match": {
+      "exact": "The digital oscilloscope at workstation 4 in the Digital Electronics Lab is not powering on.",
+      "keywords": ["oscilloscope", "workstation 4", "digital electronics lab"]
+    },
+    "output": {
+      "translatedText": "The digital oscilloscope at workstation 4 in the Digital Electronics Lab is not powering on.",
+      "detectedLanguage": "English",
+      "isFollowUp": false,
+      "intent": "REPORT"
+    }
+  },
+  {
+    "id": "chat_english_lab_booking",
+    "description": "English physics lab booking request",
+    "match": {
+      "exact": "I need to book the Physics Lab 101 on 2026-10-15 for the 10:00 AM - 12:00 PM slot for my final year project.",
+      "keywords": ["book the physics lab 101", "2026-10-15"]
+    },
+    "output": {
+      "translatedText": "I need to book the Physics Lab 101 on 2026-10-15 for the 10:00 AM - 12:00 PM slot for my final year project.",
+      "detectedLanguage": "English",
+      "isFollowUp": false,
+      "intent": "REPORT"
+    }
+  },
+  {
+    "id": "chat_english_cert_bonafide",
+    "description": "English bonafide certificate request",
+    "match": {
+      "exact": "I want to apply for a Bonafide Certificate.",
+      "keywords": ["apply for a bonafide certificate"]
+    },
+    "output": {
+      "translatedText": "I want to apply for a Bonafide Certificate.",
+      "detectedLanguage": "English",
+      "isFollowUp": false,
+      "intent": "REPORT"
+    }
+  },
+  {
+    "id": "chat_english_hostel_charger",
+    "description": "English hostel room laptop charger sparking",
+    "match": {
+      "exact": "My laptop charger is sparking and causing a short circuit in room 402, Block B.",
+      "keywords": ["laptop charger", "room 402", "block b"]
+    },
+    "output": {
+      "translatedText": "My laptop charger is sparking and causing a short circuit in room 402, Block B.",
+      "detectedLanguage": "English",
+      "isFollowUp": false,
+      "intent": "REPORT"
+    }
+  },
+  {
+    "id": "chat_english_hostel_live_wires",
+    "description": "English hostel exposed live wires safety hazard",
+    "match": {
+      "exact": "The main hallway on the 3rd floor of Block A has exposed live wires hanging from the ceiling. It is a major health-safety hazard.",
+      "keywords": ["exposed live wires", "health-safety hazard", "block a"]
+    },
+    "output": {
+      "translatedText": "The main hallway on the 3rd floor of Block A has exposed live wires hanging from the ceiling. It is a major health-safety hazard.",
+      "detectedLanguage": "English",
+      "isFollowUp": false,
+      "intent": "REPORT"
+    }
+  },
+  {
+    "id": "chat_english_grievance_harassment",
+    "description": "English student harassment grievance",
+    "match": {
+      "exact": "I am being subjected to continuous harassment by a senior student in the cafeteria.",
+      "keywords": ["continuous harassment", "senior student", "cafeteria"]
+    },
+    "output": {
+      "translatedText": "I am being subjected to continuous harassment by a senior student in the cafeteria.",
+      "detectedLanguage": "English",
+      "isFollowUp": false,
+      "intent": "REPORT"
+    }
+  },
+  {
+    "id": "chat_english_grievance_marks",
+    "description": "English unfair marks evaluation grievance",
+    "match": {
+      "exact": "A teaching assistant has been unfairly penalizing internal assessment marks with discriminatory remarks.",
+      "keywords": ["teaching assistant", "internal assessment marks", "discriminatory"]
+    },
+    "output": {
+      "translatedText": "A teaching assistant has been unfairly penalizing internal assessment marks with discriminatory remarks.",
+      "detectedLanguage": "English",
+      "isFollowUp": false,
+      "intent": "REPORT"
+    }
+  },
+  {
+    "id": "chat_hindi_vague_unclear",
+    "description": "Hindi vague and ambiguous student request",
+    "match": {
+      "exact": "सर मेरा काम जल्दी कर दीजिए बहुत परेशानी हो रही है, प्लीज़ मदद करें।",
+      "keywords": ["मेरा काम जल्दी", "परेशानी", "मदद"]
+    },
+    "output": {
+      "translatedText": "Sir please complete my work quickly, I am facing a lot of trouble, please help.",
+      "detectedLanguage": "Hindi",
+      "isFollowUp": false,
+      "intent": "REPORT"
+    }
+  },
+  {
+    "id": "chat_english_followup_reg_no",
+    "description": "English follow-up message with conversation history",
+    "match": {
+      "exact": "Here is my registration number: REG-98421 for the Bonafide Certificate.",
+      "keywords": ["REG-98421", "registration number"]
+    },
+    "output": {
+      "translatedText": "Here is my registration number: REG-98421 for the Bonafide Certificate.",
+      "detectedLanguage": "English",
+      "isFollowUp": true,
+      "intent": "REPORT"
+    }
+  },
+  {
+    "id": "chat_english_policy_question",
+    "description": "English policy inquiry question",
+    "match": {
+      "exact": "What is the policy for certificate issuance?",
+      "keywords": ["policy for certificate issuance", "how to get certificate", "procedure"]
+    },
+    "output": {
+      "translatedText": "What is the policy for certificate issuance?",
+      "detectedLanguage": "English",
+      "isFollowUp": false,
+      "intent": "QUESTION"
+    }
+  }
+]

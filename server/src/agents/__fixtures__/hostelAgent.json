@@ -1,0 +1,98 @@
+[
+  {
+    "id": "hostel_laptop_charger_medium",
+    "description": "Hostel room electrical sparking / short circuit (Personal, Medium Severity)",
+    "match": {
+      "exact": "My laptop charger is sparking and causing a short circuit in room 402, Block B.",
+      "keywords": ["laptop charger", "room 402", "Block B"]
+    },
+    "output": {
+      "extractedData": {
+        "room": "402",
+        "block": "B",
+        "issueCategory": "electrical"
+      },
+      "scope": "PERSONAL",
+      "severity": "MEDIUM",
+      "isDuplicate": false,
+      "missingInfo": []
+    }
+  },
+  {
+    "id": "hostel_fan_collective_low",
+    "description": "Hostel room fan repair (Collective, Low Severity)",
+    "match": {
+      "exact": "The fan in hostel room 204 is broken and making a lot of noise, please fix it.",
+      "keywords": ["fan", "room 204"]
+    },
+    "output": {
+      "extractedData": {
+        "room": "204",
+        "block": "UNKNOWN",
+        "issueCategory": "electrical"
+      },
+      "scope": "COLLECTIVE",
+      "severity": "LOW",
+      "isDuplicate": false,
+      "missingInfo": ["Hostel Block"]
+    }
+  },
+  {
+    "id": "hostel_tap_collective_low",
+    "description": "Hostel plumbing tap leaking (Collective, Low Severity)",
+    "match": {
+      "exact": "The water tap in hostel Block B room 304 is broken and water is continuously leaking.",
+      "keywords": ["water tap", "Block B", "room 304"]
+    },
+    "output": {
+      "extractedData": {
+        "room": "304",
+        "block": "B",
+        "issueCategory": "plumbing"
+      },
+      "scope": "COLLECTIVE",
+      "severity": "LOW",
+      "isDuplicate": false,
+      "missingInfo": []
+    }
+  },
+  {
+    "id": "hostel_critical_live_wires",
+    "description": "Hostel exposed live wires health and safety hazard (Critical Severity, forced Personal scope)",
+    "match": {
+      "exact": "The main hallway on the 3rd floor of Block A has exposed live wires hanging from the ceiling. It is a major health-safety hazard.",
+      "keywords": ["exposed live wires", "health-safety hazard", "Block A"]
+    },
+    "output": {
+      "extractedData": {
+        "room": "UNKNOWN",
+        "block": "A",
+        "issueCategory": "safety"
+      },
+      "scope": "PERSONAL",
+      "severity": "CRITICAL",
+      "isDuplicate": false,
+      "missingInfo": ["Room Number"]
+    }
+  },
+  {
+    "id": "hostel_policy_conflict_prohibited_appliance",
+    "description": "Hostel policy conflict regarding prohibited high-wattage heater",
+    "match": {
+      "exact": "Please repair my 2000W electric space heater and cooking induction stove in room 108 Block C.",
+      "keywords": ["electric space heater", "cooking induction stove", "room 108"]
+    },
+    "output": {
+      "extractedData": {
+        "room": "108",
+        "block": "C",
+        "issueCategory": "electrical"
+      },
+      "scope": "PERSONAL",
+      "severity": "MEDIUM",
+      "isDuplicate": false,
+      "missingInfo": [],
+      "policyConflict": "Conflict: High-power heating appliances and personal cooking stoves are strictly prohibited in hostel rooms under residential safety policy."
+    }
+  }
+]

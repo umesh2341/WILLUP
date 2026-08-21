@@ -1,0 +1,184 @@
+[
+  {
+    "id": "category_lab_oscilloscope",
+    "description": "Classification for laboratory equipment fault",
+    "match": {
+      "exact": "The digital oscilloscope at workstation 4 in the Digital Electronics Lab is not powering on.",
+      "keywords": ["oscilloscope", "electronics lab", "workstation 4"]
+    },
+    "output": {
+      "domain": "LABORATORY",
+      "confidence": 0.96,
+      "reasoning": "Issue pertains to faulty lab equipment in the Digital Electronics Laboratory."
+    }
+  },
+  {
+    "id": "category_lab_booking",
+    "description": "Classification for laboratory facility booking",
+    "match": {
+      "exact": "I need to book the Physics Lab 101 on 2026-10-15 for the 10:00 AM - 12:00 PM slot for my final year project.",
+      "keywords": ["book the physics lab", "physics lab 101"]
+    },
+    "output": {
+      "domain": "LABORATORY",
+      "confidence": 0.97,
+      "reasoning": "Request is for booking a physical laboratory slot for project work."
+    }
+  },
+  {
+    "id": "category_lab_booking_short",
+    "description": "Classification for short laboratory booking request",
+    "match": {
+      "exact": "Book Physics Lab 101 on 2026-10-15 for the 10:00 AM - 12:00 PM slot please.",
+      "keywords": ["book physics lab 101"]
+    },
+    "output": {
+      "domain": "LABORATORY",
+      "confidence": 0.95,
+      "reasoning": "Request explicitly asks to book a Physics Lab slot."
+    }
+  },
+  {
+    "id": "category_cert_internship",
+    "description": "Classification for study and conduct certificates",
+    "match": {
+      "exact": "I need a study certificate and a conduct certificate for my internship application.",
+      "keywords": ["study certificate", "conduct certificate", "internship"]
+    },
+    "output": {
+      "domain": "CERTIFICATE",
+      "confidence": 0.98,
+      "reasoning": "Request explicitly requests academic study and conduct certificates."
+    }
+  },
+  {
+    "id": "category_cert_bonafide",
+    "description": "Classification for bonafide certificate",
+    "match": {
+      "exact": "I want to apply for a Bonafide Certificate.",
+      "keywords": ["bonafide certificate"]
+    },
+    "output": {
+      "domain": "CERTIFICATE",
+      "confidence": 0.99,
+      "reasoning": "Student is applying for an institutional Bonafide Certificate."
+    }
+  },
+  {
+    "id": "category_cert_unrecognized",
+    "description": "Classification for unofficial certificate query",
+    "match": {
+      "exact": "I need a Super Secret Alien Passport.",
+      "keywords": ["super secret alien passport", "alien passport"]
+    },
+    "output": {
+      "domain": "CERTIFICATE",
+      "confidence": 0.75,
+      "reasoning": "Inquiry is formatted as a certificate/identity document request."
+    }
+  },
+  {
+    "id": "category_hostel_tap",
+    "description": "Classification for hostel plumbing water leak",
+    "match": {
+      "exact": "The water tap in hostel Block B room 304 is broken and water is continuously leaking.",
+      "keywords": ["water tap", "hostel block b", "room 304", "leaking"]
+    },
+    "output": {
+      "domain": "HOSTEL_MAINTENANCE",
+      "confidence": 0.95,
+      "reasoning": "Issue reports plumbing breakdown and water leakage inside hostel premises."
+    }
+  },
+  {
+    "id": "category_hostel_fan",
+    "description": "Classification for hostel fan repair",
+    "match": {
+      "exact": "The fan in hostel room 204 is broken and making a lot of noise, please fix it.",
+      "keywords": ["fan", "hostel room 204", "noise"]
+    },
+    "output": {
+      "domain": "HOSTEL_MAINTENANCE",
+      "confidence": 0.96,
+      "reasoning": "Issue reports a broken electrical appliance (fan) in a hostel room."
+    }
+  },
+  {
+    "id": "category_hostel_charger",
+    "description": "Classification for hostel electrical short circuit",
+    "match": {
+      "exact": "My laptop charger is sparking and causing a short circuit in room 402, Block B.",
+      "keywords": ["sparking", "short circuit", "room 402", "block b"]
+    },
+    "output": {
+      "domain": "HOSTEL_MAINTENANCE",
+      "confidence": 0.94,
+      "reasoning": "Issue involves electrical short circuit within hostel residential room."
+    }
+  },
+  {
+    "id": "category_hostel_live_wires",
+    "description": "Classification for hostel critical safety hazard",
+    "match": {
+      "exact": "The main hallway on the 3rd floor of Block A has exposed live wires hanging from the ceiling. It is a major health-safety hazard.",
+      "keywords": ["exposed live wires", "block a", "hallway"]
+    },
+    "output": {
+      "domain": "HOSTEL_MAINTENANCE",
+      "confidence": 0.97,
+      "reasoning": "Reports a hazardous electrical infrastructure failure in the hostel hallway."
+    }
+  },
+  {
+    "id": "category_grievance_ta_marks",
+    "description": "Classification for grading dispute / TA misconduct",
+    "match": {
+      "exact": "A teaching assistant has been unfairly penalizing internal assessment marks with discriminatory remarks.",
+      "keywords": ["teaching assistant", "penalizing internal assessment", "discriminatory"]
+    },
+    "output": {
+      "domain": "GRIEVANCE",
+      "confidence": 0.96,
+      "reasoning": "Student reports discriminatory grading behavior by teaching staff."
+    }
+  },
+  {
+    "id": "category_grievance_harassment",
+    "description": "Classification for senior student harassment",
+    "match": {
+      "exact": "I am being subjected to continuous harassment by a senior student in the cafeteria.",
+      "keywords": ["continuous harassment", "senior student", "cafeteria"]
+    },
+    "output": {
+      "domain": "GRIEVANCE",
+      "confidence": 0.98,
+      "reasoning": "Reports persistent interpersonal harassment on campus requiring formal grievance review."
+    }
+  },
+  {
+    "id": "category_unclear_vague_trouble",
+    "description": "Classification for vague distress message without context",
+    "match": {
+      "exact": "Sir please complete my work quickly, I am facing a lot of trouble, please help.",
+      "keywords": ["complete my work quickly", "facing a lot of trouble", "please help"]
+    },
+    "output": {
+      "domain": "UNCLEAR",
+      "confidence": 0.25,
+      "reasoning": "The message expresses urgency but specifies no domain, room, certificate, lab, or grievance details."
+    }
+  },
+  {
+    "id": "category_unclear_generic_doc",
+    "description": "Classification for ambiguous document issue",
+    "match": {
+      "exact": "I have an urgent problem with a document.",
+      "keywords": ["urgent problem with a document", "problem with a document"]
+    },
+    "output": {
+      "domain": "UNCLEAR",
+      "confidence": 0.35,
+      "reasoning": "The document type is unspecified and could refer to academic certificates, grievance petitions, or fee receipts."
+    }
+  }
+]

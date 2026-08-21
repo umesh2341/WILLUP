@@ -1,0 +1,71 @@
+[
+  {
+    "id": "grievance_critical_harassment",
+    "description": "Continuous harassment grievance report (Critical Severity)",
+    "match": {
+      "exact": "I am being subjected to continuous harassment by a senior student in the cafeteria.",
+      "keywords": ["continuous harassment", "senior student", "cafeteria"]
+    },
+    "output": {
+      "extractedData": {
+        "category": "harassment",
+        "description": "Continuous harassment by a senior student in the cafeteria."
+      },
+      "severity": "CRITICAL",
+      "isDuplicate": false,
+      "missingInfo": []
+    }
+  },
+  {
+    "id": "grievance_ta_marks_medium",
+    "description": "Teaching assistant unfair grading / discriminatory remarks grievance (Medium Severity)",
+    "match": {
+      "exact": "A teaching assistant has been unfairly penalizing internal assessment marks with discriminatory remarks.",
+      "keywords": ["teaching assistant", "penalizing internal assessment", "discriminatory"]
+    },
+    "output": {
+      "extractedData": {
+        "category": "academic",
+        "description": "A teaching assistant has been unfairly penalizing internal assessment marks with discriminatory remarks."
+      },
+      "severity": "MEDIUM",
+      "isDuplicate": false,
+      "missingInfo": []
+    }
+  },
+  {
+    "id": "grievance_policy_conflict_anonymous_nonacademic",
+    "description": "Grievance policy conflict: Request to overturn court decision / unsubstantiated anonymous grievance",
+    "match": {
+      "exact": "I demand the grievance board overturn the municipal court civil penalty regarding off-campus parking.",
+      "keywords": ["overturn the municipal court", "civil penalty", "off-campus parking"]
+    },
+    "output": {
+      "extractedData": {
+        "category": "administrative",
+        "description": "Demand to overturn external municipal court civil verdict."
+      },
+      "severity": "LOW",
+      "isDuplicate": false,
+      "missingInfo": [],
+      "policyConflict": "Conflict: Institutional grievance committee lacks legal jurisdiction over off-campus municipal judicial orders."
+    }
+  },
+  {
+    "id": "grievance_missing_info",
+    "description": "Vague grievance report missing specific category details",
+    "match": {
+      "exact": "I want to file a complaint against someone.",
+      "keywords": ["complaint against someone"]
+    },
+    "output": {
+      "extractedData": {
+        "category": "UNKNOWN",
+        "description": "Unspecified complaint without respondent or category details."
+      },
+      "severity": "LOW",
+      "isDuplicate": false,
+      "missingInfo": ["Grievance Category"]
+    }
+  }
+]

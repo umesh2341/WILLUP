@@ -1,0 +1,79 @@
+[
+  {
+    "id": "lab_normal_booking_success",
+    "description": "Standard laboratory booking request without conflict",
+    "match": {
+      "exact": "I need to book the Physics Lab 101 on 2026-10-15 for the 10:00 AM - 12:00 PM slot for my final year project.",
+      "keywords": ["Physics Lab 101", "2026-10-15", "10:00 AM - 12:00 PM"]
+    },
+    "output": {
+      "extractedData": {
+        "labId": "Physics Lab 101",
+        "date": "2026-10-15",
+        "timeSlot": "10:00 AM - 12:00 PM",
+        "purpose": "final year project experimentation"
+      },
+      "severity": "NA",
+      "isDuplicate": false,
+      "missingInfo": []
+    }
+  },
+  {
+    "id": "lab_policy_conflict_booking",
+    "description": "Laboratory booking request resulting in policy conflict / schedule collision",
+    "match": {
+      "exact": "Book Physics Lab 101 on 2026-10-15 for the 10:00 AM - 12:00 PM slot please.",
+      "keywords": ["Book Physics Lab 101", "slot please", "conflict"]
+    },
+    "output": {
+      "extractedData": {
+        "labId": "Physics Lab 101",
+        "date": "2026-10-15",
+        "timeSlot": "10:00 AM - 12:00 PM",
+        "purpose": "laboratory session"
+      },
+      "severity": "NA",
+      "isDuplicate": false,
+      "missingInfo": [],
+      "policyConflict": "Conflict: Laboratory Physics Lab 101 is already booked on 2026-10-15 for slot 10:00 AM - 12:00 PM."
+    }
+  },
+  {
+    "id": "lab_oscilloscope_equipment_issue",
+    "description": "Laboratory faulty equipment report",
+    "match": {
+      "exact": "The digital oscilloscope at workstation 4 in the Digital Electronics Lab is not powering on.",
+      "keywords": ["oscilloscope", "workstation 4", "Digital Electronics Lab"]
+    },
+    "output": {
+      "extractedData": {
+        "labId": "Digital Electronics Lab",
+        "date": "UNKNOWN",
+        "timeSlot": "UNKNOWN",
+        "purpose": "Equipment repair: digital oscilloscope at workstation 4 not powering on"
+      },
+      "severity": "NA",
+      "isDuplicate": false,
+      "missingInfo": []
+    }
+  },
+  {
+    "id": "lab_missing_info",
+    "description": "Laboratory booking with missing required date and time slot",
+    "match": {
+      "exact": "I want to reserve the Chemistry Lab for experiments.",
+      "keywords": ["Chemistry Lab", "reserve", "experiments"]
+    },
+    "output": {
+      "extractedData": {
+        "labId": "Chemistry Lab",
+        "date": "UNKNOWN",
+        "timeSlot": "UNKNOWN",
+        "purpose": "experiments"
+      },
+      "severity": "NA",
+      "isDuplicate": false,
+      "missingInfo": ["Date", "Time Slot"]
+    }
+  }
+]
