@@ -8,7 +8,16 @@ import {
   Activity, 
   RefreshCw, 
   LogOut, 
-  LogIn 
+  LogIn,
+  ArrowRight,
+  Mail,
+  LockKeyhole,
+  Eye,
+  EyeOff,
+  ShieldCheck,
+  Zap,
+  Clock3,
+  UserRound
 } from 'lucide-react';
 import { useAuth } from './hooks/useAuth';
 import { useRoleAssignments } from './hooks/useRoleAssignments';
@@ -164,9 +173,19 @@ export const App: React.FC = () => {
   const [receivedEvents, setReceivedEvents] = useState<any[]>([]);
 
   // Auth form state
-  const [emailInput, setEmailInput] = useState<string>('student1@test.com');
-  const [passwordInput, setPasswordInput] = useState<string>('password123');
+  const [emailInput, setEmailInput] = useState<string>(
+    import.meta.env.DEV && import.meta.env.VITE_LOCAL_DEMO_ENABLED === 'true'
+      ? import.meta.env.VITE_LOCAL_STUDENT_EMAIL
+      : 'student1@test.com'
+  );
+  const [passwordInput, setPasswordInput] = useState<string>(
+    import.meta.env.DEV && import.meta.env.VITE_LOCAL_DEMO_ENABLED === 'true'
+      ? import.meta.env.VITE_LOCAL_STUDENT_PASSWORD
+      : 'password123'
+  );
   const [authError, setAuthError] = useState<string | null>(null);
+  const [loginMode, setLoginMode] = useState<'student' | 'admin'>('student');
+  const [showPassword, setShowPassword] = useState(false);
 
   // Hook subscription for target ticket
   useTicketRealtime({
@@ -190,8 +209,18 @@ export const App: React.FC = () => {
     setAuthError(null);
     try {
       await login(emailInput, passwordInput);
+      window.history.replaceState({}, '', loginMode === 'admin' ? '/admin' : '/#new_query');
     } catch (err: any) {
       setAuthError(err.message || 'Login failed');
+    }
+  };
+
+  const selectLoginMode = (mode: 'student' | 'admin') => {
+    setLoginMode(mode);
+    setAuthError(null);
+    if (import.meta.env.DEV && import.meta.env.VITE_LOCAL_DEMO_ENABLED === 'true') {
+      setEmailInput(mode === 'admin' ? import.meta.env.VITE_LOCAL_ADMIN_EMAIL : import.meta.env.VITE_LOCAL_STUDENT_EMAIL);
+      setPasswordInput(mode === 'admin' ? import.meta.env.VITE_LOCAL_ADMIN_PASSWORD : import.meta.env.VITE_LOCAL_STUDENT_PASSWORD);
     }
   };
 
@@ -202,7 +231,47 @@ export const App: React.FC = () => {
     }
   };
 
-  return (
+  return !isAuthenticated && !authLoading ? (
+      <main className="min-h-screen bg-app-base text-app-text-primary login-shell">
+        <div className="login-brand">
+          <div className="login-brand-mark"><ShieldCheck className="w-5 h-5" /></div>
+          <span>WILLUP</span>
+        </div>
+
+        <div className="login-layout">
+          <section className="login-intro">
+            <p className="login-kicker">Institutional service delivery</p>
+            <h1>Smarter requests.<br /><em>Stronger institutions.</em></h1>
+            <p className="login-lead">The unified operating system for campus workflows, issue resolution, and human-guided AI service delivery.</p>
+            <div className="login-highlights">
+              <div><span className="login-highlight-icon"><Zap className="w-4 h-4" /></span><span><strong>Instant triage</strong><small>Requests reach the right department quickly.</small></span></div>
+              <div><span className="login-highlight-icon"><Clock3 className="w-4 h-4" /></span><span><strong>Real-time tracking</strong><small>See every SLA status and approval step.</small></span></div>
+              <div><span className="login-highlight-icon"><ShieldCheck className="w-4 h-4" /></span><span><strong>Governed access</strong><small>Role-based permissions and audit trails.</small></span></div>
+            </div>
+          </section>
+
+          <section className="login-card" aria-label="WILLUP login">
+            <div className="login-card-heading">
+              <h2>Welcome back</h2>
+              <p>Enter your details to sign in.</p>
+            </div>
+            <div className="login-tabs" role="tablist" aria-label="Login type">
+              <button type="button" role="tab" aria-selected={loginMode === 'student'} className={loginMode === 'student' ? 'active' : ''} onClick={() => selectLoginMode('student')}><UserRound className="w-3.5 h-3.5" /> Student Login</button>
+              <button type="button" role="tab" aria-selected={loginMode === 'admin'} className={loginMode === 'admin' ? 'active' : ''} onClick={() => selectLoginMode('admin')}><ShieldCheck className="w-3.5 h-3.5" /> Admin Login</button>
+            </div>
+            <form onSubmit={handleLoginSubmit} className="login-form">
+              <label>Email address<input type="email" value={emailInput} onChange={(e) => setEmailInput(e.target.value)} required autoComplete="email" /><Mail className="field-icon" /></label>
+              <label>Password<span className="password-label"><button type="button" onClick={() => setAuthError('Use your configured Supabase or local demo password.')} className="forgot-link">Forgot password?</button></span><span className="password-field"><input type={showPassword ? 'text' : 'password'} value={passwordInput} onChange={(e) => setPasswordInput(e.target.value)} required autoComplete="current-password" /><LockKeyhole className="field-icon" /><button type="button" className="password-toggle" onClick={() => setShowPassword((value) => !value)} aria-label={showPassword ? 'Hide password' : 'Show password'}>{showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}</button></span></label>
+              {authError && <p className="login-error">{authError}</p>}
+              <button type="submit" disabled={authLoading} className="login-submit">{authLoading ? 'Signing in...' : 'Sign in'} <ArrowRight className="w-4 h-4" /></button>
+            </form>
+            <div className="login-divider"><span>or</span></div>
+            <button type="button" className="login-google" onClick={() => setAuthError('Google sign-in requires a configured Supabase OAuth provider.')}><span className="google-g">G</span> Sign in with Google</button>
+            <p className="login-signup">New here? <button type="button" onClick={() => setAuthError('Account creation is managed by your institution.')}>Create an account</button></p>
+          </section>
+        </div>
+      </main>
+    ) : (
     <AppLayout>
       {({ activeDestination, onNavigate, pendingCount }: { activeDestination: NavDestination; onNavigate: (d: NavDestination) => void; pendingCount: number }) => {
         if (activeDestination === 'profile_settings') {
@@ -417,7 +486,7 @@ export const App: React.FC = () => {
         return <PlaceholderView destination={activeDestination} onNavigate={onNavigate} pendingCount={pendingCount} />;
       }}
     </AppLayout>
-  );
+    );
 };
 
 export default App;

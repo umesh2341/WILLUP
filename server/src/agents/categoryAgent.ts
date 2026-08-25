@@ -92,11 +92,13 @@ export async function categoryAgent(input: CategoryAgentInput): Promise<Category
     return { domain: "UNCLEAR", confidence: 0.3, reasoning: "Mock unclear" };
   }
 
-  const geminiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
-  const openaiKey = process.env.LLM_API_KEY || process.env.OPENAI_API_KEY;
+  const geminiKey = process.env.USE_GEMINI === "true"
+    ? process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY
+    : undefined;
+  const openaiKey = process.env.OPENROUTER_API_KEY || process.env.LLM_API_KEY || process.env.OPENAI_API_KEY;
 
   if (!geminiKey && !openaiKey) {
-    throw new Error("No active GEMINI_API_KEY or OPENAI_API_KEY found.");
+    throw new Error("No active OPENROUTER_API_KEY found.");
   }
 
   const promptText = `Student Request (Translated to English):\n"""\n${translatedText}\n"""\n\nClassify the domain.`;
@@ -161,9 +163,16 @@ export async function categoryAgent(input: CategoryAgentInput): Promise<Category
   // 2. Secondary fallback: OpenAI
   if (openaiKey && openaiKey.trim() !== "" && openaiKey !== "your_openai_api_key_here") {
     try {
-      const openai = new OpenAI({ apiKey: openaiKey });
+      const openai = new OpenAI({
+        apiKey: openaiKey,
+        baseURL: process.env.OPENROUTER_BASE_URL || process.env.LLM_BASE_URL || "https://openrouter.ai/api/v1",
+        defaultHeaders: {
+          "HTTP-Referer": process.env.OPENROUTER_SITE_URL || "http://localhost:3000",
+          "X-Title": "WILLUP",
+        },
+      });
       const completion = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
+        model: process.env.OPENROUTER_MODEL || process.env.LLM_MODEL || "openai/gpt-4o-mini",
         messages: [
           { role: "system", content: CATEGORY_AGENT_SYSTEM_PROMPT },
           { role: "user", content: promptText },

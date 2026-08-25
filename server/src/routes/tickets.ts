@@ -49,11 +49,15 @@ router.get("/", requireAuth, async (req: Request, res: Response) => {
     } else if (filter === "pending") {
       // Find RoleAssignments for this user
       const assignments = await prisma.roleAssignment.findMany({
-        where: { userId }
+        where: { userId },
+        include: { role: true }
       });
       const roleIds = assignments.map(a => a.roleId);
+      const isAdmin = assignments.some(({ role }) =>
+        ["system admin", "superadmin", "administrator"].includes(role.name.toLowerCase())
+      );
 
-      if (roleIds.length === 0) {
+      if (roleIds.length === 0 && !isAdmin) {
         return res.json({ tickets: [] });
       }
 
@@ -61,9 +65,9 @@ router.get("/", requireAuth, async (req: Request, res: Response) => {
       const tickets = await prisma.ticket.findMany({
         where: {
           status: { in: [TicketStatus.IN_WORKFLOW, TicketStatus.ESCALATED] },
-          currentStage: {
-            roleId: { in: roleIds }
-          }
+          ...(isAdmin
+            ? {}
+            : { currentStage: { roleId: { in: roleIds } } })
         },
         include: { 
           currentStage: { include: { role: true } },
@@ -268,13 +272,19 @@ router.post("/:id/approve", requireAuth, async (req: Request, res: Response) => 
 
     const currentStage = ticket.currentStage;
 
-    // 1. Verify the calling user's RoleAssignment matches the ticket's currentStage.roleId
-    const roleAssignment = await prisma.roleAssignment.findFirst({
+    // Admins may approve any active stage; other staff must hold the stage role.
+    const assignments = await prisma.roleAssignment.findMany({
       where: {
-        userId: userId,
-        roleId: currentStage.roleId
-      }
+        userId: userId
+      },
+      include: { role: true }
     });
+    const isAdmin = assignments.some(({ role }) =>
+      ["system admin", "superadmin", "administrator"].includes(role.name.toLowerCase())
+    );
+    const roleAssignment = isAdmin
+      ? assignments[0]
+      : assignments.find(assignment => assignment.roleId === currentStage.roleId);
 
     if (!roleAssignment) {
       return res.status(403).json({ error: "Forbidden: Insufficient permissions for this stage" });

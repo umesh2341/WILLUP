@@ -97,11 +97,13 @@ export async function chatAgent(input: ChatAgentInput): Promise<ChatAgentOutput>
     };
   }
 
-  const geminiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
-  const openaiKey = process.env.LLM_API_KEY || process.env.OPENAI_API_KEY;
+  const geminiKey = process.env.USE_GEMINI === "true"
+    ? process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY
+    : undefined;
+  const openaiKey = process.env.OPENROUTER_API_KEY || process.env.LLM_API_KEY || process.env.OPENAI_API_KEY;
 
   if (!geminiKey && !openaiKey) {
-    throw new Error("No active GEMINI_API_KEY or OPENAI_API_KEY found.");
+    throw new Error("No active OPENROUTER_API_KEY found.");
   }
 
   // Build the user content string
@@ -202,9 +204,13 @@ export async function chatAgent(input: ChatAgentInput): Promise<ChatAgentOutput>
     try {
       const openai = new OpenAI({
         apiKey: openaiKey,
-        baseURL: process.env.LLM_BASE_URL || undefined,
+        baseURL: process.env.OPENROUTER_BASE_URL || process.env.LLM_BASE_URL || "https://openrouter.ai/api/v1",
+        defaultHeaders: {
+          "HTTP-Referer": process.env.OPENROUTER_SITE_URL || "http://localhost:3000",
+          "X-Title": "WILLUP",
+        },
       });
-      const modelName = process.env.LLM_MODEL || "gpt-4o-mini";
+      const modelName = process.env.OPENROUTER_MODEL || process.env.LLM_MODEL || "openai/gpt-4o-mini";
 
       const messages: OpenAI.ChatCompletionMessageParam[] = [
         { role: "system", content: CHAT_AGENT_SYSTEM_PROMPT },
@@ -233,7 +239,19 @@ export async function chatAgent(input: ChatAgentInput): Promise<ChatAgentOutput>
         throw new Error("Empty response received from OpenAI.");
       }
 
-      const parsed = JSON.parse(content);
+      let parsed: Partial<ChatAgentOutput>;
+      try {
+        parsed = JSON.parse(content);
+      } catch (parseError) {
+        console.warn(`[chatAgent:OpenAI] Provider returned non-JSON content; using safe report fallback: ${content.slice(0, 120)}`);
+        return {
+          translatedText: message,
+          detectedLanguage: "English",
+          isFollowUp: Boolean(history && history.length > 0),
+          clarifyingQuestion: isCategoryUnclear ? "Could you please provide more specific details?" : undefined,
+          intent: "REPORT",
+        };
+      }
       return {
         translatedText: parsed.translatedText || message,
         detectedLanguage: parsed.detectedLanguage || "English",

@@ -11,12 +11,6 @@ declare global {
 }
 
 export async function requireAuth(req: Request, res: Response, next: NextFunction) {
-  // Test bypass
-  if (req.headers['x-test-user-id']) {
-    req.user = { id: req.headers['x-test-user-id'] as string } as User;
-    return next();
-  }
-
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({ error: "Missing or invalid authorization header" });

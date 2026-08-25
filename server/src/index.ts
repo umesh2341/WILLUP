@@ -66,6 +66,7 @@ app.use('/api/users', userRoutes);
 
 import { startEscalationWorker } from './workflow/escalationJob';
 import { startCollectiveDispatchWorker } from './workflow/collectiveDispatchJob';
+import { Domain } from '@prisma/client';
 
 const isMain = process.argv[1] && (process.argv[1].endsWith('index.ts') || process.argv[1].endsWith('index.js') || process.argv[1].endsWith('index'));
 
@@ -77,6 +78,14 @@ if (isMain) {
   // Start queue workers — non-fatal if pg-boss can't connect
   initQueue()
     .then(async () => {
+      const workflows = await prisma.workflowDefinition.findMany({
+        include: { stages: true },
+      });
+      const configuredDomains = new Set(workflows.map((workflow) => workflow.domain));
+      const missingDomains = Object.values(Domain).filter((domain) => !configuredDomains.has(domain));
+      if (missingDomains.length > 0) {
+        console.error(`[Workflow] Missing workflow definitions for: ${missingDomains.join(', ')}`);
+      }
       await startEscalationWorker();
       await startCollectiveDispatchWorker();
       console.log('[Queue] Escalation and collective dispatch workers started');

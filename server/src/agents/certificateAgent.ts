@@ -5,6 +5,7 @@ import { prisma } from "../prisma";
 import { checkIsDuplicate } from "./duplicateDetector";
 import certificateAgentFixtures from "./__fixtures__/certificateAgent.json";
 import { findFixtureMatch, FixtureEntry } from "./__fixtures__/fixtureMatcher";
+import { generateOpenRouterJson } from "./openrouter";
 
 const MODEL = process.env.GEMINI_MODEL || "gemini-3.6-flash";
 
@@ -38,50 +39,15 @@ export async function processCertificateRequest(studentId: string, translatedTex
     };
   }
 
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-
   // 1. Extract data using LLM
   let extractedData: any = {};
   try {
-    let responseText = null;
-    for (let attempt = 1; attempt <= 3; attempt++) {
-      try {
-        const response = await ai.models.generateContent({
-          model: MODEL,
-          contents: [
-            {
-              role: "user",
-              parts: [
-                {
-                  text: `Extract the certificate type from the following request. If not found, output "UNKNOWN".\n\nRequest: "${translatedText}"`
-                }
-              ]
-            }
-          ],
-          config: {
-            responseMimeType: "application/json",
-            responseSchema: responseSchema,
-            systemInstruction: "You are an AI assistant that extracts structured data from certificate requests. Always return valid JSON matching the schema.",
-          }
-        });
-        
-        if (response.text) {
-          responseText = response.text;
-          break; // success
-        } else {
-          throw new Error("No response text from Gemini");
-        }
-      } catch (err: any) {
-        if (attempt === 3) throw err;
-        if (err?.status === 429) {
-          console.log(`[certificateAgent] Rate limited. Retrying in 5 seconds (Attempt ${attempt}/3)...`);
-          await new Promise(resolve => setTimeout(resolve, 5000));
-        } else {
-          throw err;
-        }
-      }
-    }
-
+    const response = await generateOpenRouterJson(
+      "You extract certificate requests. Return JSON with certType. Use UNKNOWN when absent.",
+      `Extract the certificate type from: "${translatedText}"`
+    );
+    const responseText = JSON.stringify(response);
+    extractedData = response;
   } catch (error) {
     console.error(`[certificateAgent] LLM API call failed: ${(error as any).message}`);
     throw error;

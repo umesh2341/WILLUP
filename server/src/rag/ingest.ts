@@ -9,7 +9,7 @@ import { Domain } from "@prisma/client";
 // Configuration
 // ---------------------------------------------------------------------------
 
-const EMBEDDING_MODEL = "Xenova/all-MiniLM-L6-v2";
+const EMBEDDING_MODEL = process.env.EMBEDDING_MODEL || "Xenova/all-MiniLM-L6-v2";
 const EMBEDDING_DIM = 384; // all-MiniLM-L6-v2 output dimension
 
 const CHUNK_CHARS = 2000;

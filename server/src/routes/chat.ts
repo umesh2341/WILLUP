@@ -143,7 +143,15 @@ router.post("/message", requireAuth, async (req: Request, res: Response) => {
         });
 
         if (scope !== "COLLECTIVE") {
-          try { await assignToStage(ticket.id, 0); } catch (e: any) { console.error("Workflow error:", e.message); }
+          try {
+            await assignToStage(ticket.id, 0);
+          } catch (e: any) {
+            console.error("Workflow error:", e.message);
+            await prisma.ticket.delete({ where: { id: ticket.id } });
+            return res.status(503).json({
+              error: "The request could not be assigned to a workflow stage. Please try again shortly."
+            });
+          }
         }
 
         const updatedTicket = await prisma.ticket.findUnique({
@@ -252,6 +260,10 @@ router.post("/message", requireAuth, async (req: Request, res: Response) => {
         await assignToStage(ticket.id, 0);
       } catch (e: any) {
         console.error("Workflow error:", e.message);
+        await prisma.ticket.delete({ where: { id: ticket.id } });
+        return res.status(503).json({
+          error: "The request could not be assigned to a workflow stage. Please try again shortly."
+        });
       }
     }
 

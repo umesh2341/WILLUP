@@ -55,6 +55,7 @@ export function useAuth() {
   const login = useCallback(async (email: string, password: string) => {
     setLoading(true);
     setError(null);
+
     const { data, error: signInError } = await supabase.auth.signInWithPassword({
       email,
       password,
